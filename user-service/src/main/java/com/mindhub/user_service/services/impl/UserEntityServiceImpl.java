@@ -7,10 +7,12 @@ import com.mindhub.user_service.models.UserEntity;
 import com.mindhub.user_service.repositories.UserEntityRepository;
 import com.mindhub.user_service.services.UserEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class UserEntityServiceImpl implements UserEntityService {
 
     @Autowired
