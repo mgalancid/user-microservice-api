@@ -22,6 +22,11 @@ public class UserEntity {
 
     }
 
+    public UserEntity(String username, String email) {
+        this.username = username;
+        this.email = email;
+    }
+
     public Long getId() {
         return id;
     }
@@ -48,10 +53,5 @@ public class UserEntity {
 
     public void setRole(RoleType role) {
         this.role = role;
-    }
-
-    public UserEntity(String username, String email) {
-        this.username = username;
-        this.email = email;
     }
 }
