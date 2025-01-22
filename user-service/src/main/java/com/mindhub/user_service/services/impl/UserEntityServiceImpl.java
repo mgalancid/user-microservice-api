@@ -22,25 +22,19 @@ public class UserEntityServiceImpl implements UserEntityService {
     public List<UserEntityDTO> getAllUsersDTO() {
         return userRepository.findAll()
                 .stream()
-                .map(user -> new UserEntityDTO(user.getId(),
-                                                        user.getUsername(),
-                                                        user.getEmail()))
-                .collect(Collectors.toList()
-                );
+                .map(user -> new UserEntityDTO(user))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public NewUserEntityDTO createNewUser(NewUserEntityDTO newUserDTO) {
+    public UserEntityDTO createNewUser(NewUserEntityDTO newUserDTO) {
         UserEntity user = new UserEntity();
         user.setUsername(newUserDTO.getUsername());
         user.setEmail(newUserDTO.getEmail());
         user.setRole(newUserDTO.getRole());
-        UserEntity savedUser = userRepository.save(user);
 
-        return new NewUserEntityDTO(savedUser.getUsername(),
-                                    savedUser.getEmail(),
-                                    savedUser.getRole()
-        );
+        UserEntity savedUser = userRepository.save(user);
+        return new UserEntityDTO(savedUser);
     }
 
     @Override

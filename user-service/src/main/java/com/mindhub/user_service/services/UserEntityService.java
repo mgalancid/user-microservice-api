@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface UserEntityService {
     List<UserEntityDTO> getAllUsersDTO();
-    NewUserEntityDTO createNewUser(NewUserEntityDTO newUserDTO);
+    UserEntityDTO createNewUser(NewUserEntityDTO newUserDTO);
     List<RoleType> getAllRoles();
 }
