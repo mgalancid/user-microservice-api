@@ -4,7 +4,6 @@ import com.mindhub.user_service.dtos.NewUserEntityDTO;
 import com.mindhub.user_service.dtos.UserEntityDTO;
 import com.mindhub.user_service.exceptions.InvalidUserException;
 import com.mindhub.user_service.exceptions.NoUsersFoundException;
-import com.mindhub.user_service.exceptions.RoleNotFoundException;
 import com.mindhub.user_service.exceptions.UserAlreadyExistsException;
 import com.mindhub.user_service.models.RoleType;
 import com.mindhub.user_service.models.UserEntity;
@@ -13,8 +12,8 @@ import com.mindhub.user_service.services.UserEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +31,13 @@ public class UserEntityServiceImpl implements UserEntityService {
         return users.stream()
                 .map(user -> new UserEntityDTO(user))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserEntityDTO getUserByEmail(String email) {
+        return new UserEntityDTO(userRepository.findByEmail(email).orElseThrow(
+                () -> new InvalidUserException("User was not found"))
+        );
     }
 
     @Override

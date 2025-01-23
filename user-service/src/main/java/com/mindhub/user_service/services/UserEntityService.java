@@ -5,9 +5,11 @@ import com.mindhub.user_service.dtos.UserEntityDTO;
 import com.mindhub.user_service.models.RoleType;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserEntityService {
     List<UserEntityDTO> getAllUsersDTO();
+    UserEntityDTO getUserByEmail(String email);
     UserEntityDTO createNewUser(NewUserEntityDTO newUserDTO);
     List<RoleType> getAllRoles();
 }
