@@ -3,15 +3,12 @@ package com.mindhub.user_service.controllers;
 import com.mindhub.user_service.dtos.NewUserEntityDTO;
 import com.mindhub.user_service.dtos.UserEntityDTO;
 import com.mindhub.user_service.models.RoleType;
+import com.mindhub.user_service.models.UserEntity;
 import com.mindhub.user_service.services.impl.UserEntityServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,6 +23,11 @@ public class UserEntityController {
     public ResponseEntity<List<UserEntityDTO>> getAllUsers() {
         List<UserEntityDTO> users = userService.getAllUsersDTO();
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping(value = "/users", params = "email")
+    public UserEntityDTO getUserDTOByEmail(@RequestParam(name = "email") String email) {
+        return userService.getUserByEmail(email);
     }
 
     @PostMapping
