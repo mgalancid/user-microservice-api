@@ -2,6 +2,10 @@ package com.mindhub.user_service.services.impl;
 
 import com.mindhub.user_service.dtos.NewUserEntityDTO;
 import com.mindhub.user_service.dtos.UserEntityDTO;
+import com.mindhub.user_service.exceptions.InvalidUserException;
+import com.mindhub.user_service.exceptions.NoUsersFoundException;
+import com.mindhub.user_service.exceptions.RoleNotFoundException;
+import com.mindhub.user_service.exceptions.UserAlreadyExistsException;
 import com.mindhub.user_service.models.RoleType;
 import com.mindhub.user_service.models.UserEntity;
 import com.mindhub.user_service.repositories.UserEntityRepository;
@@ -9,6 +13,7 @@ import com.mindhub.user_service.services.UserEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,14 +25,25 @@ public class UserEntityServiceImpl implements UserEntityService {
 
     @Override
     public List<UserEntityDTO> getAllUsersDTO() {
-        return userRepository.findAll()
-                .stream()
+        List<UserEntity> users = userRepository.findAll();
+        if (users.isEmpty()) {
+            throw new NoUsersFoundException("No users found in the system.");
+        }
+        return users.stream()
                 .map(user -> new UserEntityDTO(user))
                 .collect(Collectors.toList());
     }
 
     @Override
     public UserEntityDTO createNewUser(NewUserEntityDTO newUserDTO) {
+        if (userRepository.existsByEmail(newUserDTO.getEmail())) {
+            throw new UserAlreadyExistsException("A user with the email '" + newUserDTO.getEmail() + "' already exists.");
+        }
+
+        if (newUserDTO.getUsername() == null || newUserDTO.getUsername().isEmpty()) {
+            throw new InvalidUserException("Username cannot be null or empty.");
+        }
+
         UserEntity user = new UserEntity();
         user.setUsername(newUserDTO.getUsername());
         user.setEmail(newUserDTO.getEmail());
@@ -42,3 +58,4 @@ public class UserEntityServiceImpl implements UserEntityService {
         return List.of(RoleType.values());
     }
 }
+
