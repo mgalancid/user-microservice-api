@@ -1,6 +1,7 @@
 package com.mindhub.user_service.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class UserEntity {
@@ -9,11 +10,14 @@ public class UserEntity {
     private Long id;
 
     @Column(unique = true)
+    @NotNull(message = "Username cannot be null")
     private String username;
 
     @Column(unique = true)
+    @NotNull(message = "Email cannot be null")
     private String email;
 
+    @NotNull(message = "Role cannot be null")
     private RoleType role;
 
     //private Long orderId;
