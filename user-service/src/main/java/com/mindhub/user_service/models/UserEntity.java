@@ -27,9 +27,10 @@ public class UserEntity {
 
     }
 
-    public UserEntity(String username, String email) {
-        this.username = username;
+    public UserEntity(String email, String username, RoleType role) {
         this.email = email;
+        this.username = username;
+        this.role = role;
     }
 
     public Long getId() {
