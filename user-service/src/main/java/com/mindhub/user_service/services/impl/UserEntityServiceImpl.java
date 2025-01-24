@@ -53,7 +53,7 @@ public class UserEntityServiceImpl implements UserEntityService {
         UserEntity user = new UserEntity();
         user.setUsername(newUserDTO.getUsername());
         user.setEmail(newUserDTO.getEmail());
-        user.setRole(newUserDTO.getRole());
+        user.setRole(newUserDTO.getRole()!= null ? newUserDTO.getRole() : RoleType.USER);
 
         UserEntity savedUser = userRepository.save(user);
         return new UserEntityDTO(savedUser);
