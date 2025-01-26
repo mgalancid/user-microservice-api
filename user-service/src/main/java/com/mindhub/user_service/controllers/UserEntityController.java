@@ -3,7 +3,6 @@ package com.mindhub.user_service.controllers;
 import com.mindhub.user_service.dtos.NewUserEntityDTO;
 import com.mindhub.user_service.dtos.UserEntityDTO;
 import com.mindhub.user_service.models.RoleType;
-import com.mindhub.user_service.models.UserEntity;
 import com.mindhub.user_service.services.impl.UserEntityServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,9 +24,10 @@ public class UserEntityController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping(value = "/users", params = "email")
-    public UserEntityDTO getUserDTOByEmail(@RequestParam(name = "email") String email) {
-        return userService.getUserByEmail(email);
+    @GetMapping("/email")
+    public ResponseEntity<UserEntityDTO> getUserDTOByEmail(@RequestParam(name = "email") String email) {
+        UserEntityDTO userDTO = userService.getUserByEmail(email);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
     @PostMapping

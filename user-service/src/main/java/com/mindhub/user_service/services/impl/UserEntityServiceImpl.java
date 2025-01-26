@@ -9,6 +9,7 @@ import com.mindhub.user_service.models.RoleType;
 import com.mindhub.user_service.models.UserEntity;
 import com.mindhub.user_service.repositories.UserEntityRepository;
 import com.mindhub.user_service.services.UserEntityService;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +36,10 @@ public class UserEntityServiceImpl implements UserEntityService {
 
     @Override
     public UserEntityDTO getUserByEmail(String email) {
-        return new UserEntityDTO(userRepository.findByEmail(email).orElseThrow(
-                () -> new InvalidUserException("User was not found"))
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(
+                () ->  new InvalidUserException("User not found with email: " + email)
         );
+        return new UserEntityDTO(user.getId(),user.getUsername(), user.getEmail());
     }
 
     @Override
