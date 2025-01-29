@@ -37,7 +37,7 @@ public class UserEntityController {
     @PostMapping
     public ResponseEntity<UserEntityDTO> createNewUser(@RequestBody NewUserEntityDTO newUserDTO) {
         UserEntityDTO createdUser = userService.createNewUser(newUserDTO);
-        amqpTemplate.convertAndSend("exchange", "user_registration", newUserDTO);
+        amqpTemplate.convertAndSend("exchange", "registerUser", newUserDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
