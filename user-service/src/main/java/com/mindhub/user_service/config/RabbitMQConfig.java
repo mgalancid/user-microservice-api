@@ -13,7 +13,7 @@ public class RabbitMQConfig {
 
     public static final String
             USER_REGISTER_QUEUE = "registerUser",
-            USER_REGISTER_KEY = "user_registration";
+            USER_REGISTER_KEY = "registerUser.key";
 
     @Bean
     public MessageConverter jsonMessageConverter() {
