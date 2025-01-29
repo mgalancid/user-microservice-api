@@ -11,6 +11,10 @@ import org.springframework.amqp.support.converter.MessageConverter;
 @Configuration
 public class RabbitMQConfig {
 
+    public static final String
+            USER_REGISTER_QUEUE = "registerUser",
+            USER_REGISTER_KEY = "user_registration";
+
     @Bean
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
@@ -18,7 +22,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue registerUserQueue() {
-        return new Queue("registerUser", true);
+        return new Queue(USER_REGISTER_QUEUE, true);
     }
 
     @Bean
@@ -28,7 +32,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("user_registration");
+        return BindingBuilder.bind(queue).to(exchange).with(USER_REGISTER_KEY);
     }
 
     @Bean
