@@ -4,6 +4,7 @@ import com.mindhub.user_service.dtos.NewUserEntityDTO;
 import com.mindhub.user_service.dtos.UserEntityDTO;
 import com.mindhub.user_service.models.RoleType;
 import com.mindhub.user_service.services.impl.UserEntityServiceImpl;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,9 @@ public class UserEntityController {
 
     @Autowired
     private UserEntityServiceImpl userService;
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
 
     @GetMapping
     public ResponseEntity<List<UserEntityDTO>> getAllUsers() {
@@ -33,6 +37,7 @@ public class UserEntityController {
     @PostMapping
     public ResponseEntity<UserEntityDTO> createNewUser(@RequestBody NewUserEntityDTO newUserDTO) {
         UserEntityDTO createdUser = userService.createNewUser(newUserDTO);
+        amqpTemplate.convertAndSend("exchange", "user_registration", newUserDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 

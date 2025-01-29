@@ -9,12 +9,11 @@ import com.mindhub.user_service.models.RoleType;
 import com.mindhub.user_service.models.UserEntity;
 import com.mindhub.user_service.repositories.UserEntityRepository;
 import com.mindhub.user_service.services.UserEntityService;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +42,8 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
-    public UserEntityDTO createNewUser(NewUserEntityDTO newUserDTO) {
+    @Transactional(rollbackFor = InvalidUserException.class)
+    public UserEntityDTO createNewUser(NewUserEntityDTO newUserDTO) throws InvalidUserException {
         if (userRepository.existsByEmail(newUserDTO.getEmail())) {
             throw new UserAlreadyExistsException("A user with the email '" + newUserDTO.getEmail() + "' already exists.");
         }
@@ -65,5 +65,14 @@ public class UserEntityServiceImpl implements UserEntityService {
     public List<RoleType> getAllRoles() {
         return List.of(RoleType.values());
     }
+
+    /*
+    public void validateEntries(UserEntityDTO userDTO) {
+        if (userDTO.getEmail().isBlank()) {
+
+        }
+    }
+
+     */
 }
 
