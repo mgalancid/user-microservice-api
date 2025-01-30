@@ -1,9 +1,14 @@
 package com.mindhub.user_service.controllers;
 
 import com.mindhub.user_service.config.JwtUtils;
-import com.mindhub.user_service.dtos.LoginUser;
+import com.mindhub.user_service.dtos.UserEntityDTO;
+import com.mindhub.user_service.dtos.auth.LoginUser;
+import com.mindhub.user_service.dtos.auth.RegisterUser;
+import com.mindhub.user_service.exceptions.UsernameNotFoundException;
+import com.mindhub.user_service.models.RoleType;
 import com.mindhub.user_service.models.UserEntity;
 import com.mindhub.user_service.repositories.UserEntityRepository;
+import com.mindhub.user_service.services.impl.UserEntityServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.management.relation.Role;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -23,10 +30,13 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtUtils jwtUtil;
+    private JwtUtils jwtUtils;
 
     @Autowired
-    private UserEntityRepository userEntityRepository;
+    private UserEntityServiceImpl userService;
+
+    @Autowired
+    private UserEntityRepository userRepository;
 
     @PostMapping("/login")
     public ResponseEntity<String> authenticateUser(@RequestBody LoginUser loginRequest) {
@@ -38,8 +48,12 @@ public class AuthController {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserEntity user = userService.findByEmail(authentication.getName()).orElseThrow(null);
-        String jwt = jwtUtil.generateToken(authentication.getName());
+        UserEntity user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(
+                        () -> new UsernameNotFoundException("User not found")
+                );
+        String role = user.getRole() != null ? user.getRole().toString() : RoleType.USER.toString();
+        String jwt = jwtUtils.createToken(authentication.getName(), role);
         return ResponseEntity.ok(jwt);
     }
 

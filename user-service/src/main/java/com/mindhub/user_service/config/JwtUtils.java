@@ -1,4 +1,5 @@
 package com.mindhub.user_service.config;
+import com.mindhub.user_service.models.RoleType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -33,9 +34,9 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String createToken( String username, Long id){
+    public String createToken(String username, String role){
         Map<String, String> claims = new HashMap<>();
-        claims.put("role", id.toString());
+        claims.put("role", role);
         return generateToken(username, claims);
     }
 
