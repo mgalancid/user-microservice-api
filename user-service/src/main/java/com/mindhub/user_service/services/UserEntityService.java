@@ -2,6 +2,7 @@ package com.mindhub.user_service.services;
 
 import com.mindhub.user_service.dtos.NewUserEntityDTO;
 import com.mindhub.user_service.dtos.UserEntityDTO;
+import com.mindhub.user_service.dtos.auth.RegisterUser;
 import com.mindhub.user_service.models.RoleType;
 
 import java.util.List;
@@ -11,4 +12,5 @@ public interface UserEntityService {
     UserEntityDTO getUserByEmail(String email);
     UserEntityDTO createNewUser(NewUserEntityDTO newUserDTO);
     List<RoleType> getAllRoles();
+    void registerUser(RegisterUser registerUser);
 }
