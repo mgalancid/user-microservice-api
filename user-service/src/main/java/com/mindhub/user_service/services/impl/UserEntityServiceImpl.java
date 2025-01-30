@@ -2,6 +2,7 @@ package com.mindhub.user_service.services.impl;
 
 import com.mindhub.user_service.dtos.NewUserEntityDTO;
 import com.mindhub.user_service.dtos.UserEntityDTO;
+import com.mindhub.user_service.dtos.auth.RegisterUser;
 import com.mindhub.user_service.exceptions.InvalidUserException;
 import com.mindhub.user_service.exceptions.NoUsersFoundException;
 import com.mindhub.user_service.exceptions.UserAlreadyExistsException;
@@ -10,6 +11,7 @@ import com.mindhub.user_service.models.UserEntity;
 import com.mindhub.user_service.repositories.UserEntityRepository;
 import com.mindhub.user_service.services.UserEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,9 @@ public class UserEntityServiceImpl implements UserEntityService {
 
     @Autowired
     private UserEntityRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<UserEntityDTO> getAllUsersDTO() {
@@ -66,13 +71,18 @@ public class UserEntityServiceImpl implements UserEntityService {
         return List.of(RoleType.values());
     }
 
-    /*
-    public void validateEntries(UserEntityDTO userDTO) {
-        if (userDTO.getEmail().isBlank()) {
-
+    @Override
+    public void registerUser(RegisterUser registerUser) {
+        if (userRepository.existsByEmail(registerUser.email())) {
+            throw new UserAlreadyExistsException("Username already exists");
         }
+
+        UserEntity user = new UserEntity();
+        user.setEmail(registerUser.email());
+        user.setPassword(passwordEncoder.encode(registerUser.password()));
+
+        userRepository.save(user);
     }
 
-     */
 }
 
