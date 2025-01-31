@@ -1,11 +1,11 @@
 package com.mindhub.user_service.services.impl;
 
-import com.mindhub.user_service.dtos.NewUserEntityDTO;
 import com.mindhub.user_service.dtos.UserEntityDTO;
 import com.mindhub.user_service.dtos.auth.RegisterUser;
 import com.mindhub.user_service.exceptions.InvalidUserException;
 import com.mindhub.user_service.exceptions.NoUsersFoundException;
 import com.mindhub.user_service.exceptions.UserAlreadyExistsException;
+import com.mindhub.user_service.exceptions.UserNotFoundException;
 import com.mindhub.user_service.models.RoleType;
 import com.mindhub.user_service.models.UserEntity;
 import com.mindhub.user_service.repositories.UserEntityRepository;
@@ -39,6 +39,14 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
+    public UserEntityDTO getUserDTOById(Long id) throws UserNotFoundException {
+        UserEntity user = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("User not found with id: " + id)
+        );
+        return new UserEntityDTO(user);
+    }
+
+    @Override
     public UserEntityDTO getUserByEmail(String email) {
         UserEntity user = userRepository.findByEmail(email).orElseThrow(
                 () ->  new InvalidUserException("User not found with email: " + email)
@@ -47,31 +55,12 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
-    @Transactional(rollbackFor = InvalidUserException.class)
-    public UserEntityDTO createNewUser(NewUserEntityDTO newUserDTO) throws InvalidUserException {
-        if (userRepository.existsByEmail(newUserDTO.getEmail())) {
-            throw new UserAlreadyExistsException("A user with the email '" + newUserDTO.getEmail() + "' already exists.");
-        }
-
-        if (newUserDTO.getUsername() == null || newUserDTO.getUsername().isEmpty()) {
-            throw new InvalidUserException("Username cannot be null or empty.");
-        }
-
-        UserEntity user = new UserEntity();
-        user.setUsername(newUserDTO.getUsername());
-        user.setEmail(newUserDTO.getEmail());
-        user.setRole(newUserDTO.getRole()!= null ? newUserDTO.getRole() : RoleType.USER);
-
-        UserEntity savedUser = userRepository.save(user);
-        return new UserEntityDTO(savedUser);
-    }
-
-    @Override
     public List<RoleType> getAllRoles() {
         return List.of(RoleType.values());
     }
 
     @Override
+    @Transactional
     public void registerUser(RegisterUser registerUser) {
         if (userRepository.existsByEmail(registerUser.email())) {
             throw new UserAlreadyExistsException("Username already exists");
@@ -80,9 +69,12 @@ public class UserEntityServiceImpl implements UserEntityService {
         UserEntity user = new UserEntity();
         user.setEmail(registerUser.email());
         user.setPassword(passwordEncoder.encode(registerUser.password()));
+        user.setUsername(registerUser.username());
+        user.setRole(RoleType.USER);
 
         userRepository.save(user);
     }
+
 
 }
 

@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface UserEntityService {
     List<UserEntityDTO> getAllUsersDTO();
+    UserEntityDTO getUserDTOById(Long id);
     UserEntityDTO getUserByEmail(String email);
-    UserEntityDTO createNewUser(NewUserEntityDTO newUserDTO);
     List<RoleType> getAllRoles();
     void registerUser(RegisterUser registerUser);
 }
