@@ -19,9 +19,6 @@ public class UserEntityController {
     @Autowired
     private UserEntityServiceImpl userService;
 
-    public static final String
-            USER_REGISTER_KEY = "registerUser.key";
-
     @GetMapping
     public ResponseEntity<List<UserEntityDTO>> getAllUsers() {
         List<UserEntityDTO> users = userService.getAllUsersDTO();
