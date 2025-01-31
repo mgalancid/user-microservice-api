@@ -19,9 +19,6 @@ public class UserEntityController {
     @Autowired
     private UserEntityServiceImpl userService;
 
-    @Autowired
-    private AmqpTemplate amqpTemplate;
-
     public static final String
             USER_REGISTER_KEY = "registerUser.key";
 
@@ -31,17 +28,16 @@ public class UserEntityController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UserEntityDTO> getUserById(@PathVariable Long id) {
+        UserEntityDTO userDTO = userService.getUserDTOById(id);
+        return ResponseEntity.ok(userDTO);
+    }
+
     @GetMapping("/email")
     public ResponseEntity<UserEntityDTO> getUserDTOByEmail(@RequestParam(name = "email") String email) {
         UserEntityDTO userDTO = userService.getUserByEmail(email);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
-    }
-
-    @PostMapping
-    public ResponseEntity<UserEntityDTO> createNewUser(@RequestBody NewUserEntityDTO newUserDTO) {
-        UserEntityDTO createdUser = userService.createNewUser(newUserDTO);
-        amqpTemplate.convertAndSend("exchange", USER_REGISTER_KEY, newUserDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @GetMapping("/roles")
