@@ -1,7 +1,6 @@
 package com.mindhub.user_service.controllers;
 
 import com.mindhub.user_service.config.JwtUtils;
-import com.mindhub.user_service.dtos.UserEntityDTO;
 import com.mindhub.user_service.dtos.auth.LoginUser;
 import com.mindhub.user_service.dtos.auth.RegisterUser;
 import com.mindhub.user_service.exceptions.UsernameNotFoundException;
@@ -9,6 +8,7 @@ import com.mindhub.user_service.models.RoleType;
 import com.mindhub.user_service.models.UserEntity;
 import com.mindhub.user_service.repositories.UserEntityRepository;
 import com.mindhub.user_service.services.impl.UserEntityServiceImpl;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,6 +38,12 @@ public class AuthController {
     @Autowired
     private UserEntityRepository userRepository;
 
+    @Autowired
+    private AmqpTemplate amqpTemplate;
+
+    public static final String
+            USER_REGISTER_KEY = "registerUser.key";
+
     @PostMapping("/login")
     public ResponseEntity<String> authenticateUser(@RequestBody LoginUser loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -60,6 +66,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterUser registerUser) {
         userService.registerUser(registerUser);
+        amqpTemplate.convertAndSend("exchange", USER_REGISTER_KEY, registerUser);
         return ResponseEntity.ok("User registered successfully");
     }
 }
